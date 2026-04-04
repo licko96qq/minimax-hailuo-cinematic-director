@@ -6,6 +6,8 @@
 
 - `final-with-music.mp4`
   最终带配乐成片
+- `cover.jpg`
+  三段 contact sheet 拼接封面
 - `storyboard.md`
   三段式分镜
 - `prompts.md`
