@@ -77,7 +77,7 @@ Before generating, always produce:
 
 ## Production defaults
 
-- Model: `MiniMax-Hailuo-2.3`
+- Default model when no special constraint is given: `MiniMax-Hailuo-2.3`
 - Duration: `6`
 - Resolution: `768P`
 - Prompt language: English
@@ -85,6 +85,38 @@ Before generating, always produce:
 - `prompt_optimizer`: `false` when exact cinematic control matters
 - Prefer `i2v` for Shot 2 when continuing a real Shot 1
 - Allow Shot 3 to switch back to `t2v` if chained anchors would cause repetitive output
+
+## Two execution modes
+
+Do not collapse these into one mental model.
+
+### Mode 1: `MiniMax-Hailuo-2.3`
+
+This is the primary mode and must remain available.
+
+- Treat it as the standard cinematic three-shot workflow.
+- It supports the usual mixed planning structure:
+  - Shot 1: `t2v` world setup
+  - Shot 2: `i2v` continuation when useful
+  - Shot 3: `t2v` or `i2v` depending on distinctness needs
+- Use this mode when the user wants maximum freedom for establishing shots and payoff shots.
+- Do not replace this mode just because `Fast` exists.
+
+### Mode 2: `MiniMax-Hailuo-2.3-Fast`
+
+This is the secondary mode, not a full replacement for Mode 1.
+
+- Treat it as `image-to-video first`.
+- Do not assume plain `t2v` support.
+- If the sequence starts from scratch, first generate several `image-01` still candidates and choose the correct anchor frame before spending `Fast` video quota.
+- For `Fast`, continuity should be carried through:
+  - selected setup anchor still
+  - optional chained `i2v` continuation for Shot 2
+  - separate payoff anchor still for Shot 3 when needed
+- Prefer staged execution instead of spending all three shots in one command.
+- When the user asks for `Fast`, explicitly preserve the existence of Mode 1 in planning and documentation.
+- Before running `Fast`, verify anchor still quality. If the file extension says `.png` but the bytes are actually JPEG, do not assume the extension is truthful.
+- The current scripts now encode `first_frame_image` by sniffing the real file header, not only the filename extension.
 
 ## Storyboard contract
 
@@ -182,6 +214,8 @@ Do not overwrite the silent preview. Deliver the music-backed version as a separ
   Extract a frame from a local video for continuity anchoring.
 - `scripts/generate_hailuo_video.py`
   Send a single Hailuo text-to-video or image-to-video request and save all artifacts.
+- `scripts/generate_minimax_images.py`
+  Generate multiple image anchors first when `Fast` should start from selected stills.
 - `scripts/run_story_sequence.py`
   Execute a multi-shot package in order, automatically extracting anchor frames between shots and running post-generation review by default. Use `--with-soundtrack` when you also want the soundtrack pipeline.
 - `scripts/review_generated_sequence.py`
@@ -196,6 +230,8 @@ Do not overwrite the silent preview. Deliver the music-backed version as a separ
   Review whether the soundtrack + video combination is suitable for delivery.
 - `scripts/run_soundtrack_pipeline.py`
   Run soundtrack audit, music generation, mixing, and soundtrack review end to end.
+- `scripts/run_soundtrack_candidates.py`
+  Generate, audit, mix, review, rank, and promote multiple soundtrack candidates against the same silent preview.
 - `scripts/record_feedback.py`
   Save user ratings and notes so future runs can reuse what worked.
 

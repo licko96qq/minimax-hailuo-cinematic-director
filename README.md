@@ -10,6 +10,26 @@
 - 再做成片复盘
 - 需要时再补 MiniMax 配乐、混音与音画适配复盘
 
+## 双模式约定
+
+这个项目现在有两种明确分开的执行模式，不能混用概念：
+
+### 第一种：`MiniMax-Hailuo-2.3`
+
+- 主模式
+- 保留文本生成视频能力
+- 适合标准三段式导演 workflow
+- 常见结构是 `Shot 1 = t2v`、`Shot 2 = i2v`、`Shot 3 = t2v/i2v`
+
+### 第二种：`MiniMax-Hailuo-2.3-Fast`
+
+- 次模式
+- 视为 `i2v-first` 流程，不应默认当作普通 `t2v`
+- 正确用法是先用 `image-01` 生成多张定帧图候选，再选 anchor still，再跑 `Fast`
+- 为避免重复镜头，第三段必要时要使用独立 payoff anchor，而不是机械续写第二段
+
+`Fast` 的存在不应覆盖第一种模式；第一种文本生成视频 workflow 必须一直保留。
+
 ## 项目亮点
 
 - 三段式电影叙事 `story package` 规划
@@ -17,7 +37,20 @@
 - 中文审核摘要与中文成片复盘
 - MiniMax `music-2.5` 配乐规划、审核、生成与混音
 - 默认保留无声版，同时单独导出带配乐版
+- `Fast` 模式支持“先多张 anchor still，再 staged i2v” workflow
+- 首帧图 data URL 会按真实文件头自动识别 MIME，不再只信扩展名
 - 精选案例可直接在仓库中查看和下载
+
+## 内置预设
+
+- `storm-lighthouse-rescue`
+  标准三段式导演流 + 配乐闭环
+- `iceland-continuation`
+  从现有视频续写三段式片段
+- `cloud-postgirl-runaway-star`
+  标准 `MiniMax-Hailuo-2.3` 文生视频三段式案例
+- `cloud-postgirl-runaway-star-fast`
+  `MiniMax-Hailuo-2.3-Fast` 的 anchor still -> i2v 案例
 
 ## 精选案例
 
@@ -109,6 +142,25 @@ python3 scripts/run_soundtrack_pipeline.py \
   --execute
 ```
 
+如果要在 `Fast` 模式下先批量生成 anchor 候选：
+
+```bash
+python3 scripts/generate_minimax_images.py \
+  --prompt-file output/runs/cloud-postgirl-runaway-star-fast-20260405/anchors/shot-01.prompt.txt \
+  --output-dir output/runs/cloud-postgirl-runaway-star-fast-20260405/anchors/shot-01-candidates \
+  --count 6
+```
+
+如果要在已有 silent preview 上跑多候选配乐并自动选优：
+
+```bash
+python3 scripts/run_soundtrack_candidates.py \
+  --story-package output/runs/cloud-postgirl-runaway-star-fast-20260405/story-package.json \
+  --sequence-preview output/runs/cloud-postgirl-runaway-star-fast-20260405/review/sequence-preview.mp4 \
+  --output-dir output/runs/cloud-postgirl-runaway-star-fast-20260405/soundtrack-candidates \
+  --execute
+```
+
 ## 版本管理
 
 - 当前版本：`0.1.0`
@@ -121,3 +173,11 @@ python3 scripts/run_soundtrack_pipeline.py \
 - 不上传 `output/` 下的中间产物
 - 不上传任何 API key、`.env`、下载签名或临时缓存
 - 精选示例放在 `examples/`，只保留可交付 demo 与摘要
+
+## Future TODO
+
+更多中长期规划见 [ROADMAP.md](ROADMAP.md)：
+
+- 完成 `Fast` 版弱段精修稳定化
+- 探索从现有三段式视频继续续写下一个高质量三段
+- 最终扩展到 5 分钟高质量、连续、连贯、有故事性的 AI 电影短片

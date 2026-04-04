@@ -1,0 +1,19 @@
+{
+  "project": "cloud-postgirl-runaway-star-fast",
+  "topic": "A cinematic three-shot sunrise cloud-mail story about a trainee postgirl chasing a runaway starlight parcel, planned for MiniMax-Hailuo-2.3-Fast i2v execution",
+  "treatment": "cute anime adventure redesigned for Fast mode with image-anchored setup, kinetic chase continuation, and a separate payoff anchor to avoid repeated framing",
+  "defaults": {
+    "model": "MiniMax-Hailuo-2.3-Fast",
+    "duration": 6,
+    "resolution": "768P",
+    "prompt_optimizer": false
+  },
+  "tags": [
+    "anime",
+    "cloud-sea",
+    "postal",
+    "starlight",
+    "cute",
+    "fast-i2v"
+  ]
+}

@@ -151,8 +151,21 @@ def retrieve_file(file_id):
     return response_json
 
 
+def sniff_mime_type(file_path):
+    raw = pathlib.Path(file_path).read_bytes()
+    if raw.startswith(b"\x89PNG\r\n\x1a\n"):
+        return "image/png"
+    if raw.startswith(b"\xff\xd8\xff"):
+        return "image/jpeg"
+    if raw[:6] in (b"GIF87a", b"GIF89a"):
+        return "image/gif"
+    if raw[:4] == b"RIFF" and raw[8:12] == b"WEBP":
+        return "image/webp"
+    return mimetypes.guess_type(pathlib.Path(file_path).name)[0] or "application/octet-stream"
+
+
 def file_to_data_url(path):
     file_path = pathlib.Path(path)
-    mime_type = mimetypes.guess_type(file_path.name)[0] or "image/png"
+    mime_type = sniff_mime_type(file_path)
     encoded = base64.b64encode(file_path.read_bytes()).decode("ascii")
     return f"data:{mime_type};base64,{encoded}"

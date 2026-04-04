@@ -7,6 +7,7 @@ from minimax_common import (
     check_success,
     download_file,
     file_to_data_url,
+    sniff_mime_type,
     post_json,
     retrieve_file,
     wait_for_video,
@@ -39,6 +40,7 @@ def main():
     if args.first_frame_image:
         first_frame_path = pathlib.Path(args.first_frame_image)
         if first_frame_path.exists():
+            detected_mime_type = sniff_mime_type(first_frame_path)
             payload["first_frame_image"] = file_to_data_url(first_frame_path)
         else:
             payload["first_frame_image"] = args.first_frame_image
@@ -73,6 +75,10 @@ def main():
     }
     if "first_frame_image" in payload:
         summary["first_frame_image_mode"] = "provided"
+    if args.first_frame_image and pathlib.Path(args.first_frame_image).exists():
+        summary["first_frame_image_path"] = str(pathlib.Path(args.first_frame_image).resolve())
+        summary["first_frame_image_detected_mime_type"] = detected_mime_type
+        summary["first_frame_image_extension"] = pathlib.Path(args.first_frame_image).suffix
     write_json(output_dir / "summary.json", summary)
     print((output_dir / "summary.json").read_text(encoding="utf-8"))
 

@@ -5,7 +5,7 @@ import json
 import pathlib
 import subprocess
 
-from minimax_common import read_json, write_json
+from minimax_common import read_json, resolve_path, write_json
 
 
 def run_command(args):
@@ -82,7 +82,21 @@ def main():
             continue
 
         first_frame_path = None
-        if shot.get("input_mode") == "i2v":
+        if shot.get("input_mode") == "i2v" and shot.get("first_frame_image"):
+            resolved_first_frame = resolve_path(shot["first_frame_image"], story_base_dir)
+            if resolved_first_frame.exists():
+                first_frame_path = resolved_first_frame
+                shot_record["anchor_frame"] = str(first_frame_path)
+                shot_record["anchor_source"] = "direct-first-frame-image"
+            elif not args.execute:
+                first_frame_path = resolved_first_frame
+                shot_record["anchor_frame"] = str(resolved_first_frame)
+                shot_record["anchor_status"] = "pending-direct-image"
+            else:
+                raise RuntimeError(
+                    f"Missing direct first frame image for {shot['shot_id']}: {resolved_first_frame}"
+                )
+        elif shot.get("input_mode") == "i2v":
             anchor_from = shot["anchor_from"]
             anchor_video = shot_results.get(anchor_from)
             if anchor_video is None:

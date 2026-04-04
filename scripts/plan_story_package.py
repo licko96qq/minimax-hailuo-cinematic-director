@@ -28,6 +28,7 @@ def shot_dict(
     resolution,
     prompt_optimizer,
     input_mode="t2v",
+    first_frame_image=None,
     anchor_from=None,
     frame_position=None,
     frame_offset_seconds=None,
@@ -58,6 +59,8 @@ def shot_dict(
     }
     if input_mode:
         payload["input_mode"] = input_mode
+    if first_frame_image:
+        payload["first_frame_image"] = first_frame_image
     if anchor_from:
         payload["anchor_from"] = anchor_from
     if frame_position:
@@ -266,6 +269,77 @@ def lighthouse_music_plan(shots):
             "music_volume": 0.3,
             "fade_in_seconds": 0.7,
             "fade_out_seconds": 1.7,
+            "loop_strategy": "loop_if_short_trim_if_long",
+            "trim_to_video": True,
+        },
+        "audit_targets": {
+            "required_total_score": 80,
+            "required_narrative_fit": 22,
+            "required_mix_feasibility": 16,
+        },
+    }
+
+
+def cloud_postgirl_music_plan(shots):
+    total_duration = total_duration_seconds(shots)
+    shot_duration = float(shots[0].get("duration", 0) or 0)
+    return {
+        "model": "music-2.5",
+        "mode": "instrumental-score",
+        "vocal_policy": "no-vocals",
+        "goal": "为云海邮差三段短片规划一条轻冒险、可爱、电影级的连续配乐。",
+        "duration_strategy": "先生成一条略长的纯配乐，再按最终无声 preview 时长裁切并保留尾部淡出。",
+        "target_video_duration_seconds": total_duration,
+        "overall_arc": "第一段建立晨曦云海世界与出发感，第二段明显推进追逐张力，第三段转为温暖发光的送达收束。",
+        "palette": "轻盈木管、柔和弦乐、微弱钟琴、温暖竖琴点缀、少量推进性打击，不做人声，不做流行副歌。",
+        "prompt_zh": (
+            "无歌词、无人声、纯电影配乐。为一条晨曦云海邮差三段式动漫短片创作连续背景音乐。"
+            "第一段要有轻盈出发感、梦幻天空感和清晨苏醒感；第二段加入更明确但不过分激烈的推进节奏，"
+            "表现见习少女邮差追逐逃跑星屑包裹的轻冒险兴奋；第三段转为温暖、发光、带一点释然与成就感的收束。"
+            "整体要像高质量动画电影配乐，柔和自然，不要流行歌曲结构，不要主唱，不要电子舞曲感。"
+        ),
+        "prompt_en": (
+            "Instrumental only, no vocals, no singing. Compose a cinematic animation-style score for a three-shot sunrise cloud-mail story. "
+            "Shot one should feel airy, hopeful, and softly wondrous as the cloud-rail world wakes up. "
+            "Shot two should add clear forward momentum and playful adventure as a trainee postgirl chases a runaway starlight parcel. "
+            "Shot three should resolve into warm glowing delivery payoff and gentle accomplishment. "
+            "Use refined film-score orchestration with light woodwinds, soft strings, subtle bells, and restrained rhythmic lift. "
+            "Avoid pop-song structure, avoid lead vocals, avoid EDM energy."
+        ),
+        "lyrics": instrumental_placeholder_lyrics(),
+        "cue_sheet": [
+            {
+                "shot_id": "shot-01",
+                "title": "Morning Route",
+                "start_seconds": 0.0,
+                "end_seconds": round(shot_duration, 3),
+                "story_function": "setup",
+                "music_function": "晨曦世界建立与出发感",
+                "energy": "低到中",
+            },
+            {
+                "shot_id": "shot-02",
+                "title": "Catch the Star",
+                "start_seconds": round(shot_duration, 3),
+                "end_seconds": round(shot_duration * 2, 3),
+                "story_function": "escalation",
+                "music_function": "轻冒险推进与追逐兴奋",
+                "energy": "中",
+            },
+            {
+                "shot_id": "shot-03",
+                "title": "First Delivery Light",
+                "start_seconds": round(shot_duration * 2, 3),
+                "end_seconds": total_duration,
+                "story_function": "payoff",
+                "music_function": "温暖发光的送达收束",
+                "energy": "中到低",
+            },
+        ],
+        "mix_plan": {
+            "music_volume": 0.26,
+            "fade_in_seconds": 0.9,
+            "fade_out_seconds": 1.8,
             "loop_strategy": "loop_if_short_trim_if_long",
             "trim_to_video": True,
         },
@@ -656,6 +730,236 @@ def build_lighthouse_package(args):
     return package
 
 
+def build_cloud_postgirl_package(args):
+    preset = read_json(
+        pathlib.Path(__file__).resolve().parents[1] / "assets" / "cloud-postgirl-runaway-star-brief.json"
+    )
+    defaults = preset["defaults"]
+    package = {
+        "project": preset["project"],
+        "topic": preset["topic"],
+        "language": "zh-CN",
+        "treatment": preset["treatment"],
+        "defaults": defaults,
+        "continuity_spine": {
+            "world": (
+                "The same sunrise cloud-sea town with suspended brass rail lines, flower-shaped platforms, "
+                "floating rooftops, and a cliffside star mailbox above the clouds."
+            ),
+            "light": (
+                "The same soft sunrise light with natural pastel blue-pink clouds, warm golden edge light, "
+                "and gentle atmospheric haze."
+            ),
+            "emotion": "A progression from hopeful departure, to playful chase, to warm first-delivery accomplishment.",
+            "cause_effect": (
+                "Shot 1 establishes the route and the glowing parcel slipping loose. "
+                "Shot 2 follows the chase as the parcel escapes farther along the mail tram. "
+                "Shot 3 reveals that returning the parcel to the star mailbox lights the waking cloud town."
+            ),
+        },
+        "audit_targets": {
+            "required_total_score": 85,
+            "required_distinctness_score": 26,
+            "min_adjacent_difference_axes": 3,
+        },
+        "tags": preset["tags"],
+        "shots": [
+            shot_dict(
+                "shot-01",
+                "Morning Route",
+                "setup",
+                "world-establishment",
+                "a tiny brass sky-mail tram crossing a sunrise cloud town with the trainee postgirl aboard",
+                "the viewer understands the floating rail world, the heroine, and the glowing parcel beginning to slip free",
+                "high-aerial",
+                "wide-establishing",
+                "gliding aerial descent toward the tram and station",
+                ["same brass mail tram", "same pastel sunrise cloud sea", "same trainee postgirl", "same glowing starlight parcel"],
+                ["world setup", "high aerial scale", "environment as primary subject"],
+                [],
+                "第一段是建立镜头：晨曦中的云海小镇、悬空黄铜邮轨、花瓣形站台和一辆穿云而行的小邮车共同建立完整世界。"
+                "见习少女邮差站在车尾平台，怀里鼓鼓的邮包里有一颗发光星屑包裹正悄悄松脱。重点是柔和自然的粉蓝晨光、"
+                "可爱主角的第一眼魅力、以及故事即将开始的出发感，不要急着进入激烈动作。",
+                "A cinematic anime opening shot at sunrise above a floating cloud-sea town. Suspended brass mail rails curve between flower-shaped platforms, tiny rooftops, and cliffside postal towers rising out of soft pastel blue-pink clouds. A small brass sky-mail tram glides along the route as a cute trainee postgirl, around early-teen age, stands on the rear platform in an oversized blue postal cape and cap. A glowing starlight parcel is just starting to slip loose from her mail satchel, hinting at the coming chase. The camera begins high above the cloud town and performs a smooth descending drift toward the tram [推进], establishing world, heroine, and morning promise. High-definition anime feature-film look, soft hand-painted textures, gentle golden rim light, cute but cinematic, no chaotic action yet.",
+                defaults["model"],
+                defaults["duration"],
+                defaults["resolution"],
+                defaults["prompt_optimizer"],
+                input_mode="t2v",
+                tags=["anime", "setup", "cloud-town", "postgirl", "distinct"],
+            ),
+            shot_dict(
+                "shot-02",
+                "Catch the Star",
+                "escalation",
+                "chase",
+                "the trainee postgirl chasing the runaway glowing parcel across the moving tram roof",
+                "the parcel breaks fully free and the heroine must catch it before it flies toward the open clouds",
+                "roof-height-low",
+                "medium tracking",
+                "fast low oblique tracking along the tram roof",
+                ["same brass mail tram", "same pastel sunrise light", "same cloud-town route", "same glowing parcel and heroine silhouette"],
+                ["much lower camera height", "heroine becomes primary subject", "kinetic lateral chase motion", "story shifts from setup to pursuit"],
+                ["repeat the high aerial establishing composition", "behave like another calm world-building shot", "lose the tram roof geography"],
+                "第二段必须明显压低镜头并收紧构图，直接进入追逐。镜头贴近邮车车顶或侧前方，见习少女邮差在晨风里追赶那颗"
+                "已经挣脱邮包、带着星屑尾迹向前弹跳的小包裹。重点从世界建立转到角色动作和任务目标，动作强度是中等，"
+                "轻冒险、兴奋、可爱，不要做成危险特技大片。",
+                "A cinematic continuation of the same sunrise cloud-mail world, clearly different from the opening aerial setup. Continue from the moving tram and drop the camera to roof height for a fast low oblique tracking shot alongside the brass car. The trainee postgirl is now the primary subject as she runs after the runaway glowing parcel bouncing and skimming across the tram roof, leaving a tiny stardust trail in the morning wind. The cloud town and flower station blur past behind her, her oversized blue cape and short hair whipping back as she reaches forward with focused excitement. This is a playful adventure chase, not a dangerous stunt spectacle. Keep the same soft pastel blue-pink sunrise logic and the same tram geography, but make the shot intimate, kinetic, and clearly more specific than shot one. High-definition anime feature-film look, cute expressive motion, clean cinematic action, moderate energy.",
+                defaults["model"],
+                defaults["duration"],
+                defaults["resolution"],
+                defaults["prompt_optimizer"],
+                input_mode="i2v",
+                anchor_from="shot-01",
+                frame_position="end",
+                frame_offset_seconds=0.12,
+                tags=["anime", "escalation", "chase", "i2v", "distinct"],
+            ),
+            shot_dict(
+                "shot-03",
+                "First Delivery Light",
+                "payoff",
+                "arrival",
+                "the girl and the giant cliffside star mailbox as the cloud town lights up below",
+                "catching and delivering the parcel reveals that it is the first morning mail that wakes the whole route",
+                "cliffside-high",
+                "extreme-wide witness composition",
+                "restrained hold with a gentle reveal of the town lights awakening",
+                ["same cloud town", "same pastel sunrise palette", "same trainee postgirl", "same glowing parcel now delivered"],
+                ["new witness viewpoint", "new emotional function", "broader payoff composition", "motion calms down after the chase"],
+                ["repeat the tram-roof pursuit angle", "behave like another middle chase shot", "keep the heroine as a close action subject"],
+                "第三段不能再追逐，而是要进入收束。镜头切到悬崖边巨大的星形邮筒附近，以明显更远、更稳、更有见证感的构图看见"
+                "少女终于把包裹送入邮筒，随后云海小镇的轨道灯与窗灯依次亮起。角色仍然可爱，但这段的主体是‘送达后整个世界被唤醒’"
+                "这一层意义，要有晨曦发光感和第一次完成任务的小小成就感。",
+                "A cinematic payoff shot in the same sunrise cloud-post world, but with a clearly different function from shot two. From a high cliffside viewpoint beside a giant star-shaped mailbox, frame an extreme-wide witness composition over the cloud town below. The trainee postgirl, now a small figure in the frame, finally places the recovered glowing parcel into the mailbox; a warm pulse of light travels outward as rail lamps, station lanterns, and tiny windows across the floating town awaken one after another through the pastel morning haze. The chase energy resolves into wonder and accomplishment. Keep the same soft natural blue-pink sunrise palette and the same heroine silhouette, but shift the emphasis from action to luminous payoff and story meaning. High-definition anime feature-film look, gentle hand-painted atmosphere, cinematic scale, emotionally clear ending, no repeated chase composition.",
+                defaults["model"],
+                defaults["duration"],
+                defaults["resolution"],
+                defaults["prompt_optimizer"],
+                input_mode="t2v",
+                tags=["anime", "payoff", "arrival", "mailbox", "distinct"],
+            ),
+        ],
+    }
+    package["music_plan"] = cloud_postgirl_music_plan(package["shots"])
+    return package
+
+
+def build_cloud_postgirl_fast_package(args):
+    preset = read_json(
+        pathlib.Path(__file__).resolve().parents[1] / "assets" / "cloud-postgirl-runaway-star-fast-brief.json"
+    )
+    defaults = preset["defaults"]
+    package = {
+        "project": preset["project"],
+        "topic": preset["topic"],
+        "language": "zh-CN",
+        "treatment": preset["treatment"],
+        "defaults": defaults,
+        "continuity_spine": {
+            "world": (
+                "The same sunrise cloud-sea town with suspended brass rail lines, flower-shaped stations, "
+                "a moving sky-mail tram, and a cliffside star mailbox above the same cloud valley."
+            ),
+            "light": (
+                "The same soft sunrise light with natural pastel blue-pink clouds, warm golden edge light, "
+                "and gentle haze across all image anchors and generated motion."
+            ),
+            "emotion": "A progression from hopeful departure, to playful chase, to warm first-delivery accomplishment.",
+            "cause_effect": (
+                "Shot 1 starts from a prepared setup anchor still and introduces the parcel slipping loose. "
+                "Shot 2 continues the same tram geography as the chase intensifies. "
+                "Shot 3 uses a separate payoff anchor still at the star mailbox so Fast mode can end on a clearly different composition without repeating shot two."
+            ),
+        },
+        "audit_targets": {
+            "required_total_score": 85,
+            "required_distinctness_score": 26,
+            "min_adjacent_difference_axes": 3,
+        },
+        "tags": preset["tags"],
+        "shots": [
+            shot_dict(
+                "shot-01",
+                "Morning Route",
+                "setup",
+                "world-establishment",
+                "a prepared anime key art still of the sunrise cloud tram and the trainee postgirl before the parcel escapes",
+                "the viewer understands the floating rail world, the heroine, and the glowing parcel beginning to slip free",
+                "high-aerial",
+                "wide-establishing",
+                "gentle aerial drift and small character/environment motion from the still anchor",
+                ["same brass mail tram", "same pastel sunrise cloud sea", "same trainee postgirl", "same glowing starlight parcel"],
+                ["world setup", "high aerial scale", "environment as primary subject"],
+                [],
+                "Fast 版第一段必须从预先准备的 setup anchor still 起步。锚点图应已经包含晨曦云海小镇、悬空黄铜邮轨、"
+                "小邮车和见习少女邮差。生成时不要重写世界，而是让画面在 6 秒内轻柔活起来：云层缓慢流动、邮车前行、"
+                "少女回头察觉包裹松脱，发光星屑包裹开始滑出邮包。重点仍是建立世界和出发感。",
+                "Starting from the provided anime setup anchor still of the sunrise cloud-mail tram, animate the scene into a gentle cinematic opening. The soft pastel cloud sea drifts, the brass tram moves forward along the suspended rail, the trainee postgirl in her oversized blue cape notices movement in her satchel, and the glowing starlight parcel begins to slip loose. Keep the same established composition and world identity from the anchor image, then add subtle motion, light wind, and a clear story trigger. High-definition anime feature-film look, soft hand-painted textures, gentle golden rim light, cute and cinematic, calm but alive, no abrupt camera redesign.",
+                defaults["model"],
+                defaults["duration"],
+                defaults["resolution"],
+                defaults["prompt_optimizer"],
+                input_mode="i2v",
+                first_frame_image="anchors/shot-01-start.png",
+                tags=["anime", "setup", "fast", "i2v", "distinct"],
+            ),
+            shot_dict(
+                "shot-02",
+                "Catch the Star",
+                "escalation",
+                "chase",
+                "the trainee postgirl chasing the runaway glowing parcel across the moving tram roof",
+                "the parcel breaks fully free and the heroine must catch it before it flies toward the open clouds",
+                "roof-height-low",
+                "medium tracking",
+                "fast low oblique tracking along the tram roof",
+                ["same brass mail tram", "same pastel sunrise light", "same cloud-town route", "same glowing parcel and heroine silhouette"],
+                ["much lower camera height", "heroine becomes primary subject", "kinetic lateral chase motion", "story shifts from setup to pursuit"],
+                ["repeat the high aerial establishing composition", "behave like another calm world-building shot", "lose the tram roof geography"],
+                "第二段继续使用 i2v，但必须比第一段更低、更近、更动。沿用第一段末帧的车体和角色关系，镜头压到邮车车顶高度，"
+                "让见习少女邮差在晨风里追赶弹跳的发光包裹。动作强度中等，重点是轻冒险和明确任务推进，不要拍成危险杂技。",
+                "Continue from the end frame of shot one in the same sunrise cloud-mail world, but drop to a much lower roof-height viewpoint and turn the scene into a playful chase. The runaway glowing parcel bounces and skims along the moving tram roof, leaving a tiny stardust trail, while the trainee postgirl runs after it with focused excitement, her blue cape and short hair moving in the wind. Keep the same tram, same pastel sunrise logic, and same story geography, but make the shot intimate, kinetic, and clearly different from the setup. Moderate action energy, cute anime feature-film motion, clean cinematic chase, not a dangerous stunt spectacle.",
+                defaults["model"],
+                defaults["duration"],
+                defaults["resolution"],
+                defaults["prompt_optimizer"],
+                input_mode="i2v",
+                anchor_from="shot-01",
+                frame_position="end",
+                frame_offset_seconds=0.12,
+                tags=["anime", "escalation", "chase", "fast", "i2v", "distinct"],
+            ),
+            shot_dict(
+                "shot-03",
+                "First Delivery Light",
+                "payoff",
+                "arrival",
+                "a prepared payoff anchor still of the girl beside the giant cliffside star mailbox above the waking cloud town",
+                "delivering the parcel reveals that it is the first morning mail that lights the whole route",
+                "cliffside-high",
+                "extreme-wide witness composition",
+                "restrained hold with a gentle reveal of the town lights awakening",
+                ["same cloud town", "same pastel sunrise palette", "same trainee postgirl", "same glowing parcel now delivered"],
+                ["new witness viewpoint", "new emotional function", "broader payoff composition", "motion calms down after the chase"],
+                ["repeat the tram-roof pursuit angle", "behave like another middle chase shot", "keep the heroine as a close action subject"],
+                "Fast 版第三段不要再从第二段末帧硬续，以免重复镜头。应改用单独准备的 payoff anchor still：少女已经抵达悬崖边巨大的"
+                "星形邮筒，脚下是同一座晨曦云海小镇。生成时让她把包裹送入邮筒，然后轨道灯、站台灯和小镇窗灯依次苏醒，完成温暖收束。",
+                "Starting from the provided payoff anchor still at the cliffside star mailbox, animate a clearly different final image in the same sunrise cloud-post world. The trainee postgirl, now small in the frame, places the recovered glowing parcel into the giant star-shaped mailbox. A warm pulse of light travels outward and rail lamps, station lanterns, and tiny windows across the floating town awaken one after another through the pastel morning haze. Keep the same heroine design, same cloud town palette, and same sunrise light logic, but do not behave like another chase shot. High-definition anime feature-film look, gentle hand-painted atmosphere, luminous emotional payoff, stable witness composition.",
+                defaults["model"],
+                defaults["duration"],
+                defaults["resolution"],
+                defaults["prompt_optimizer"],
+                input_mode="i2v",
+                first_frame_image="anchors/shot-03-start.png",
+                tags=["anime", "payoff", "arrival", "fast", "i2v", "distinct"],
+            ),
+        ],
+    }
+    package["music_plan"] = cloud_postgirl_music_plan(package["shots"])
+    return package
+
+
 def render_director_brief(package):
     lines = [
         f"# Director Brief: {package['project']}",
@@ -704,6 +1008,10 @@ def render_storyboard(package):
             lines.append(f"- Difference axes: {', '.join(shot['difference_axes'])}")
         if shot["must_not_repeat"]:
             lines.append(f"- Must not repeat: {', '.join(shot['must_not_repeat'])}")
+        if shot.get("first_frame_image"):
+            lines.append(f"- First frame image: {shot['first_frame_image']}")
+        if shot.get("anchor_from"):
+            lines.append(f"- Anchor from: {shot['anchor_from']}")
         if shot.get("status") == "existing":
             lines.append(f"- Existing video: {shot['video_path']}")
         else:
@@ -725,6 +1033,8 @@ def render_shotlist(package):
                 f"- Camera height: {shot['camera_height']}",
                 f"- Framing: {shot['framing']}",
                 f"- Camera movement: {shot['camera_movement']}",
+                f"- First frame image: {shot.get('first_frame_image', 'n/a')}",
+                f"- Anchor from: {shot.get('anchor_from', 'n/a')}",
                 "",
             ]
         )
@@ -829,7 +1139,16 @@ def render_distinctness_check(package):
 def main():
     parser = argparse.ArgumentParser(description="Create a Hailuo story package")
     parser.add_argument("--topic", default="cinematic nature story")
-    parser.add_argument("--preset", choices=["iceland-continuation", "storm-lighthouse-rescue"], default=None)
+    parser.add_argument(
+        "--preset",
+        choices=[
+            "iceland-continuation",
+            "storm-lighthouse-rescue",
+            "cloud-postgirl-runaway-star",
+            "cloud-postgirl-runaway-star-fast",
+        ],
+        default=None,
+    )
     parser.add_argument("--existing-shot-video", default=None)
     parser.add_argument("--output-dir", required=True)
     parser.add_argument("--treatment", default="cinematic connected three-shot story")
@@ -848,6 +1167,10 @@ def main():
         package = build_iceland_package(args)
     elif args.preset == "storm-lighthouse-rescue":
         package = build_lighthouse_package(args)
+    elif args.preset == "cloud-postgirl-runaway-star":
+        package = build_cloud_postgirl_package(args)
+    elif args.preset == "cloud-postgirl-runaway-star-fast":
+        package = build_cloud_postgirl_fast_package(args)
     else:
         package = build_generic_package(args)
 
