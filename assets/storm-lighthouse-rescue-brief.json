@@ -1,0 +1,19 @@
+{
+  "project": "storm-lighthouse-rescue",
+  "topic": "A cinematic three-shot storm lighthouse rescue story",
+  "treatment": "maritime survival suspense with a hard-won safe-harbor payoff",
+  "defaults": {
+    "model": "MiniMax-Hailuo-2.3",
+    "duration": 6,
+    "resolution": "768P",
+    "prompt_optimizer": false
+  },
+  "tags": [
+    "lighthouse",
+    "storm",
+    "rescue",
+    "cinematic",
+    "maritime",
+    "three-shot-story"
+  ]
+}

@@ -1,0 +1,146 @@
+{
+  "project": "replace-with-project-slug",
+  "topic": "replace with the user topic",
+  "language": "zh-CN",
+  "treatment": "replace with the chosen treatment",
+  "defaults": {
+    "model": "MiniMax-Hailuo-2.3",
+    "duration": 6,
+    "resolution": "768P",
+    "prompt_optimizer": false
+  },
+  "continuity_spine": {
+    "world": "what must stay the same",
+    "light": "what light logic must stay coherent",
+    "emotion": "what emotional objective ties the sequence together",
+    "cause_effect": "how each shot should lead into the next"
+  },
+  "audit_targets": {
+    "required_total_score": 80,
+    "required_distinctness_score": 24,
+    "min_adjacent_difference_axes": 3
+  },
+  "music_plan": {
+    "model": "music-2.5",
+    "mode": "instrumental-score",
+    "vocal_policy": "no-vocals",
+    "goal": "为三段视频生成一条连续背景音乐",
+    "duration_strategy": "先生成较长音乐，再按最终成片时长裁切",
+    "target_video_duration_seconds": 18,
+    "overall_arc": "建立、升级、收束",
+    "palette": "电影配乐、无人声、非流行歌曲",
+    "prompt_zh": "中文音乐提示词",
+    "prompt_en": "English music prompt.",
+    "lyrics": "",
+    "cue_sheet": [
+      {
+        "shot_id": "shot-01",
+        "title": "Setup",
+        "start_seconds": 0.0,
+        "end_seconds": 6.0,
+        "story_function": "setup",
+        "music_function": "氛围建立",
+        "energy": "低到中"
+      },
+      {
+        "shot_id": "shot-02",
+        "title": "Escalation",
+        "start_seconds": 6.0,
+        "end_seconds": 12.0,
+        "story_function": "escalation",
+        "music_function": "张力推进",
+        "energy": "中到高"
+      },
+      {
+        "shot_id": "shot-03",
+        "title": "Payoff",
+        "start_seconds": 12.0,
+        "end_seconds": 18.0,
+        "story_function": "payoff",
+        "music_function": "情绪收束",
+        "energy": "中到低"
+      }
+    ],
+    "mix_plan": {
+      "music_volume": 0.28,
+      "fade_in_seconds": 0.8,
+      "fade_out_seconds": 1.5,
+      "loop_strategy": "loop_if_short_trim_if_long",
+      "trim_to_video": true
+    },
+    "audit_targets": {
+      "required_total_score": 80,
+      "required_narrative_fit": 22,
+      "required_mix_feasibility": 16
+    }
+  },
+  "tags": ["cinematic", "multi-shot", "hailuo-2.3"],
+  "shots": [
+    {
+      "shot_id": "shot-01",
+      "title": "Setup",
+      "dramatic_purpose": "setup",
+      "story_beat": "world-establishment",
+      "primary_subject": "what the viewer should care about",
+      "new_information": "what this shot reveals",
+      "camera_height": "high",
+      "framing": "wide-establishing",
+      "camera_movement": "one clean move",
+      "continuity_anchors": ["world", "light", "emotion"],
+      "difference_axes": ["world setup"],
+      "must_not_repeat": [],
+      "input_mode": "t2v",
+      "prompt_zh": "中文意图说明",
+      "prompt_en": "English production prompt.",
+      "model": "MiniMax-Hailuo-2.3",
+      "duration": 6,
+      "resolution": "768P",
+      "prompt_optimizer": false
+    },
+    {
+      "shot_id": "shot-02",
+      "title": "Escalation",
+      "dramatic_purpose": "escalation",
+      "story_beat": "discovery",
+      "primary_subject": "the new clue or narrative center",
+      "new_information": "what changes here",
+      "camera_height": "low or mid",
+      "framing": "medium-wide",
+      "camera_movement": "descent or tracking move",
+      "continuity_anchors": ["same world", "same light", "same palette"],
+      "difference_axes": ["lower camera height", "new subject", "new beat"],
+      "must_not_repeat": ["repeat the setup composition"],
+      "input_mode": "i2v",
+      "anchor_from": "shot-01",
+      "frame_position": "end",
+      "frame_offset_seconds": 0.12,
+      "prompt_zh": "中文意图说明",
+      "prompt_en": "English production prompt.",
+      "model": "MiniMax-Hailuo-2.3",
+      "duration": 6,
+      "resolution": "768P",
+      "prompt_optimizer": false
+    },
+    {
+      "shot_id": "shot-03",
+      "title": "Payoff",
+      "dramatic_purpose": "payoff",
+      "story_beat": "revelation",
+      "primary_subject": "the final emotional image",
+      "new_information": "what gives the sequence meaning",
+      "camera_height": "very-high or ground-distant",
+      "framing": "extreme-wide or witness composition",
+      "camera_movement": "revealing lift or restrained hold",
+      "continuity_anchors": ["same world", "same light", "same emotion"],
+      "difference_axes": ["new composition", "new emotional function", "payoff beat"],
+      "must_not_repeat": ["repeat shot-02 framing", "behave like another middle shot"],
+      "input_mode": "t2v",
+      "prompt_zh": "中文意图说明",
+      "prompt_en": "English production prompt.",
+      "model": "MiniMax-Hailuo-2.3",
+      "duration": 6,
+      "resolution": "768P",
+      "prompt_optimizer": false
+    }
+  ]
+}

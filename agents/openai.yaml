@@ -1,0 +1,7 @@
+interface:
+  display_name: "MiniMax Hailuo Director"
+  short_description: "规划并生成 MiniMax Hailuo 电影级多镜头连续叙事视频"
+  default_prompt: "Use $minimax-hailuo-cinematic-director to plan and generate a cinematic multi-shot Hailuo 2.3 story sequence."
+
+policy:
+  allow_implicit_invocation: true

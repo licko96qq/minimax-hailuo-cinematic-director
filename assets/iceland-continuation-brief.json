@@ -1,0 +1,19 @@
+{
+  "project": "iceland-glacier-river-continuation",
+  "topic": "Continue the Iceland glacier river story with a cinematic three-shot arc",
+  "treatment": "natural-history epic with anonymous human traces",
+  "defaults": {
+    "model": "MiniMax-Hailuo-2.3",
+    "duration": 6,
+    "resolution": "768P",
+    "prompt_optimizer": false
+  },
+  "tags": [
+    "iceland",
+    "glacier",
+    "river",
+    "cinematic",
+    "nature-documentary",
+    "anonymous-human"
+  ]
+}
