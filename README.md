@@ -76,6 +76,20 @@
 - 规划审核：[audit-summary.md](examples/iceland-continuation-20260404/audit-summary.md)
 - 成片复盘：[review-summary.md](examples/iceland-continuation-20260404/review-summary.md)
 
+### Cloud Postgirl Runaway Star Fast
+
+![Cloud Postgirl Runaway Star Fast](examples/cloud-postgirl-runaway-star-fast-20260405/cover.jpg)
+
+- 带配乐成片：[final-with-music.mp4](examples/cloud-postgirl-runaway-star-fast-20260405/final-with-music.mp4)
+- 无声预览片：[sequence-preview.mp4](examples/cloud-postgirl-runaway-star-fast-20260405/sequence-preview.mp4)
+- 分镜：[storyboard.md](examples/cloud-postgirl-runaway-star-fast-20260405/storyboard.md)
+- 提示词：[prompts.md](examples/cloud-postgirl-runaway-star-fast-20260405/prompts.md)
+- 配乐规划：[music-plan.md](examples/cloud-postgirl-runaway-star-fast-20260405/music-plan.md)
+- 规划审核：[audit-summary.md](examples/cloud-postgirl-runaway-star-fast-20260405/audit-summary.md)
+- 成片复盘：[review-summary.md](examples/cloud-postgirl-runaway-star-fast-20260405/review-summary.md)
+- 配乐候选榜：[candidate-summary.md](examples/cloud-postgirl-runaway-star-fast-20260405/candidate-summary.md)
+- 音画复盘：[soundtrack-review-summary.md](examples/cloud-postgirl-runaway-star-fast-20260405/soundtrack-review-summary.md)
+
 ## 核心流程
 
 1. 用 `plan_story_package.py` 生成三段式故事包。

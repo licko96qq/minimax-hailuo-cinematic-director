@@ -8,6 +8,7 @@
 - 新增 `run_soundtrack_candidates.py`，支持多候选配乐的自动审核、混音、复盘、选优和提升
 - `generate_hailuo_video.py` / `minimax_common.py` 现按真实文件头识别首帧图 MIME，规避“JPEG 内容误存为 .png”导致的 Fast 首帧上传失败
 - README 补充 `Fast` anchor workflow、多候选配乐和未来 roadmap
+- 新增 `examples/cloud-postgirl-runaway-star-fast-20260405`，正式收录云端邮差 Fast 案例、成片、预览、审核与配乐候选结果
 
 ## v0.1.0 - 2026-04-05
 
