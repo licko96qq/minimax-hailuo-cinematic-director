@@ -80,6 +80,8 @@
 
 ![Cloud Postgirl Runaway Star Fast](examples/cloud-postgirl-runaway-star-fast-20260405/cover.jpg)
 
+- 案例说明：[README.md](examples/cloud-postgirl-runaway-star-fast-20260405/README.md)
+- 封面说明：`3 x 3` 关键帧九宫格，三行分别对应 `shot-01`、`shot-02`、`shot-03`
 - 带配乐成片：[final-with-music.mp4](examples/cloud-postgirl-runaway-star-fast-20260405/final-with-music.mp4)
 - 无声预览片：[sequence-preview.mp4](examples/cloud-postgirl-runaway-star-fast-20260405/sequence-preview.mp4)
 - 分镜：[storyboard.md](examples/cloud-postgirl-runaway-star-fast-20260405/storyboard.md)
