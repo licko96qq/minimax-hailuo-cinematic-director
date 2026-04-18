@@ -76,6 +76,22 @@
 - 规划审核：[audit-summary.md](examples/iceland-continuation-20260404/audit-summary.md)
 - 成片复盘：[review-summary.md](examples/iceland-continuation-20260404/review-summary.md)
 
+### Forest Spirit Family Dawn Lantern
+
+![Forest Spirit Family Dawn Lantern](examples/forest-spirit-family-dawn-lantern-20260419/cover.jpg)
+
+- 案例说明：[README.md](examples/forest-spirit-family-dawn-lantern-20260419/README.md)
+- 封面说明：`3 x 3` 关键帧总览，三行分别对应 `shot-01`、`shot-02`、`shot-03`
+- 带配乐成片：[final-with-music.mp4](examples/forest-spirit-family-dawn-lantern-20260419/final-with-music.mp4)
+- 无声预览片：[sequence-preview.mp4](examples/forest-spirit-family-dawn-lantern-20260419/sequence-preview.mp4)
+- 分镜：[storyboard.md](examples/forest-spirit-family-dawn-lantern-20260419/storyboard.md)
+- 提示词：[prompts.md](examples/forest-spirit-family-dawn-lantern-20260419/prompts.md)
+- 配乐规划：[music-plan.md](examples/forest-spirit-family-dawn-lantern-20260419/music-plan.md)
+- 规划审核：[audit-summary.md](examples/forest-spirit-family-dawn-lantern-20260419/audit-summary.md)
+- 成片复盘：[review-summary.md](examples/forest-spirit-family-dawn-lantern-20260419/review-summary.md)
+- 配乐审核：[soundtrack-audit-summary.md](examples/forest-spirit-family-dawn-lantern-20260419/soundtrack-audit-summary.md)
+- 音画复盘：[soundtrack-review-summary.md](examples/forest-spirit-family-dawn-lantern-20260419/soundtrack-review-summary.md)
+
 ### Cloud Postgirl Runaway Star Fast
 
 ![Cloud Postgirl Runaway Star Fast](examples/cloud-postgirl-runaway-star-fast-20260405/cover.jpg)
